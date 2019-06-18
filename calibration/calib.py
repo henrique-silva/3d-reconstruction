@@ -90,5 +90,14 @@ for fname in images:
     cv2.imshow('undistorted',dst)
     cv2.waitKey(1000)
     raw_input('')
+#Save parameters into numpy file
+np.save("./camera_params/RetVal", ret)
+np.save("./camera_params/CameraMatrix", mtx)
+np.save("./camera_params/DistortionCoeffs", dist)
+np.save("./camera_params/RotationVectors", rvecs)
+np.save("./camera_params/TranslationVectors", tvecs)
+np.save("./camera_params/FocalLength", focal_length)
+
+print('Camera intrinsic parameters saved!')
 
 cv2.destroyAllWindows()
