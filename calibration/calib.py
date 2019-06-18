@@ -1,6 +1,9 @@
 import numpy as np
 import cv2
 import glob
+import PIL.Image
+import PIL.ExifTags
+
 #Function that Downsamples image x number (reduce_factor) of times.
 def downsample_image(image, reduce_factor):
 	for i in range(0,reduce_factor):
@@ -50,16 +53,26 @@ for fname in images:
 
 retL, mtxL, distL, rvecsL, tvecsL = cv2.calibrateCamera(objpointsL, imgpointsL, grayL.shape[::-1], None, None)
 #print(retL, mtxL, distL, rvecsL, tvecsL)
+#Get exif data in order to get focal length.
+exif_img = PIL.Image.open(images[0])
 
 #Right view calibration
 images = sorted(glob.glob('chess/right/*.jpg'))
+exif_data = {
+	PIL.ExifTags.TAGS[k]:v
+	for k, v in exif_img._getexif().items()
+	if k in PIL.ExifTags.TAGS}
 
 for fname in images:
     img = cv2.imread(fname)
     grayR = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+#Get focal length in tuple form
+focal_length_exif = exif_data['FocalLength']
 
     # Find the chess board corners
     ret, cornersR = cv2.findChessboardCorners(grayR, (6,9),None)
+#Get focal length in decimal form
+focal_length = float(focal_length_exif[0])/focal_length_exif[1]
 
     # If found, add object points, image points (after refining them)
     if ret == True:
